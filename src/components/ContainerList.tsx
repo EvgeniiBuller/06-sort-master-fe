@@ -12,6 +12,8 @@ const ContainerList = () => {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
+  const [itemInputs, setItemInputs] = useState<Record<string, string>>({});
+
   useEffect(() => {
     fetch("/api/containers")
       .then((res) => {
@@ -41,14 +43,36 @@ const ContainerList = () => {
     }
   };
 
+  const handleAddItem = async (containerId: string) => {
+    const itemName = itemInputs[containerId];
+    if (!itemName) return;
+
+    try {
+      const res = await fetch("/api/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: itemName, containerId }),
+      });
+
+      if (!res.ok) throw new Error("Failed to add item");
+
+      setMessage("Item added successfully");
+      setItemInputs((prev) => ({ ...prev, [containerId]: "" }));
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong");
+      }
+    }
+  };
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Rubbish Containers</h2>
 
       {error && (
-        <div className="bg-red-100 text-red-700 p-2 mb-4 rounded">
-          {error}
-        </div>
+        <div className="bg-red-100 text-red-700 p-2 mb-4 rounded">{error}</div>
       )}
       {message && (
         <div className="bg-green-100 text-green-700 p-2 mb-4 rounded">
@@ -71,6 +95,26 @@ const ContainerList = () => {
             </button>
             <h3 className="text-xl font-semibold">{container.name}</h3>
             <p>{container.description}</p>
+            <div className="mt-4 flex flex-col gap-2 bg-white/90 rounded p-2 w-full max-w-xs text-black">
+              <input
+                type="text"
+                placeholder="Item name"
+                value={itemInputs[container.id] || ""}
+                onChange={(e) =>
+                  setItemInputs((prev) => ({
+                    ...prev,
+                    [container.id]: e.target.value,
+                  }))
+                }
+                className="px-2 py-1 rounded border border-gray-300"
+              />
+              <button
+                onClick={() => handleAddItem(container.id)}
+                className="bg-black text-white px-3 py-1 rounded hover:bg-gray-800"
+              >
+                Add Item
+              </button>
+            </div>
           </li>
         ))}
       </ul>
