@@ -10,9 +10,10 @@ const CreateContainerForm = () => {
   const formik = useFormik({
     initialValues: {
       name: "",
-      color: "",
+      color: "#FFA500",
       description: "",
     },
+
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
       color: Yup.string()
@@ -100,12 +101,12 @@ const CreateContainerForm = () => {
           </label>
           <input
             id="color"
-            type="text"
+            type="color"
             {...formik.getFieldProps("color")}
-            className={`w-full px-3 py-2 text-sm border rounded-md shadow-sm ${
-              formik.touched.color && formik.errors.color
-                ? "border-red-500"
-                : "border-input"
+            className={`p-1 h-10 w-14 block bg-white border cursor-pointer rounded-lg disabled:opacity-50 disabled:pointer-events-none ${
+               formik.touched.color && formik.errors.color
+                 ? "border-red-500"
+                 : "border-input"
             }`}
             placeholder="#FFA500"
           />
