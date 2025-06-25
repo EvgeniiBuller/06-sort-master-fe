@@ -1,5 +1,5 @@
 export default interface Container {
-  id: string;
+  id: number;
   color: string;
   name: string;
   description: string;
