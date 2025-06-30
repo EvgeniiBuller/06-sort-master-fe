@@ -24,6 +24,13 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onDelete }) => {
             className="bg-white border border-gray-300 rounded-lg p-5 shadow-lg transition-transform duration-200 ease-in-out hover:-translate-y-1"
         >
             <h3 className="text-blue-600 mt-0 mb-3 text-2xl font-semibold">{item.name}</h3>
+
+               {item.type && (
+                <p className="mb-2 text-gray-700 leading-relaxed">
+                    <strong className="text-gray-800">Type:</strong> {item.type}
+                </p>
+            )}
+            
             {item.container !== null && item.container !== undefined ? (
                 <div className="mb-2 text-gray-600 leading-relaxed">
                     <strong className="text-gray-800">Container:</strong>{' '}

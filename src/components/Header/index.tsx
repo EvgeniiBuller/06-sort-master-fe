@@ -1,6 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
+
+   const location = useLocation(); 
+
+  
+  const getNavLinkClass = (path: string) =>
+    `text-sm font-medium transition-colors ${
+      location.pathname === path ? 'text-blue-600 font-bold' : 'text-gray-600 hover:text-black'
+    }`;
+
   return (
     <header className="w-full border-b bg-white shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
@@ -41,6 +50,10 @@ export default function Header() {
           >
             Add container
           </Link>
+          <Link to="/adverts" className={getNavLinkClass('/adverts')}> 
+            Adverts
+          </Link>
+          
         </nav>
       </div>
     </header>

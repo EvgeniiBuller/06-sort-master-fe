@@ -1,4 +1,5 @@
-export default interface Container {
+
+export interface Container {
   id: number;
   color: string;
   name: string;

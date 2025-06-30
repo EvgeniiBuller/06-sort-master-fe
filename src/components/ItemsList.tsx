@@ -1,7 +1,10 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import ItemCard from "../components/ItemCard";
+
 import type { Item } from "../common/types/Item";
+import type { Container } from "../common/types/Container"; 
 
 const BASE_URL = "http://localhost:8080/api";
 
@@ -10,14 +13,26 @@ const ItemsList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchItems = useCallback(async () => {
+  const fetchItemsAndContainers = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get<Item[]>(`${BASE_URL}/items`);
-      setItems(response.data);
-    } catch (err) {
-      console.error("Error receiving items:", err);
+      const [itemsResponse, containersResponse] = await Promise.all([
+        axios.get<Item[]>(`${BASE_URL}/items`),
+        axios.get<Container[]>(`${BASE_URL}/containers`),
+      ]);
 
+      const containersMap = new Map<number, Container>();
+      containersResponse.data.forEach(c => containersMap.set(c.id, c));
+
+      const itemsWithContainers = itemsResponse.data.map(item => ({
+        ...item,
+        container: item.containerId ? containersMap.get(item.containerId) || null : null
+      }));
+
+      setItems(itemsWithContainers);
+      setError(null); 
+    } catch (err) {
+      console.error("Error fetching items or containers:", err);
       if (axios.isAxiosError(err)) {
         setError(
           "Could not load the list of items: " +
@@ -30,23 +45,26 @@ const ItemsList: React.FC = () => {
           "The list of items could not be loaded. Please try again later."
         );
       }
+      setItems([]); 
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
+    fetchItemsAndContainers(); 
+  }, [fetchItemsAndContainers]);
 
   const handleDeleteItem = async (id: number) => {
-    try {
-      await axios.delete(`${BASE_URL}/items/${id}`);
-      alert("Item deleted successfully!");
-      fetchItems();
-    } catch (error) {
-      console.error("Error deleting item:", error);
-      alert("Failed to delete item. Please try again.");
+    if (window.confirm('Are you sure you want to delete this item?')) { 
+      try {
+        await axios.delete(`${BASE_URL}/items/${id}`);
+        alert("Item deleted successfully!");
+        fetchItemsAndContainers(); 
+      } catch (error) {
+        console.error("Error deleting item:", error);
+        alert("Failed to delete item. Please try again.");
+      }
     }
   };
 
@@ -69,9 +87,8 @@ const ItemsList: React.FC = () => {
   return (
     <div className="max-w-[900px] mx-auto my-5 p-5 bg-gray-50 rounded-lg shadow-md font-sans">
       <h1 className="text-gray-800 text-center mb-6 text-4xl font-bold">
-        All Subjects
-      </h1>
-
+        All Items
+      </h1> 
       {items.length === 0 ? (
         <p className="text-center p-5 text-lg text-gray-700 bg-gray-100 border border-gray-300 rounded-md mt-5">
           There are no items to display.
