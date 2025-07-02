@@ -30,12 +30,12 @@ const AdvertCard: React.FC<AdvertCardProps> = ({ advert, onDelete, compact = fal
 
   return (
     <li className={cardClasses}>
-      {advert.photo && ( 
+      {advert.photoUrl && ( 
         <img
-          src={advert.photo}
+          src={advert.photoUrl}
           alt={advert.title}
           className={imageClasses}
-          onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/150?text=No+Image'; }} // Заглушка при ошибке загрузки
+          onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/150?text=No+Image'; }} 
         />
       )}
       <h2 className={titleClasses}>{advert.title}</h2>

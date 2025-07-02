@@ -6,11 +6,13 @@ import Containers from "./pages/Containers";
 import CreateContainerForm from "./components/CreateContainerForm";
 import ItemsPage from "./pages/ItemsPage";
 import AdvertsPage from "./pages/AdvertsPage";
+import { AdvertProvider } from './contexts/AdvertContext';
 
 function App() {
   return (
     <div>
       <Layout>
+        <AdvertProvider>
         <Routes>
           <Route index element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -19,6 +21,7 @@ function App() {
           <Route path="/items" element={<ItemsPage />} />
           <Route path="/adverts" element={<AdvertsPage />} />
         </Routes>
+        </AdvertProvider>
       </Layout>    
     </div>
   );
